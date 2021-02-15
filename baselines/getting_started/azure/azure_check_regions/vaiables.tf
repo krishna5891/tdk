@@ -1,13 +1,23 @@
-# List of services and resources to be Check: Approved.
-# Started with a few resource types to get started aligned with the initial mods installed
-# You can remove the comment per row to include the resource type.  Make sure you have the related service mod installed
+# Baseline Configuration
 
-# Acceptable Values:
-# "Skip"
-# "Check: Approved"
-# "Enforce: Delete unapproved if new"
+variable "resource_approved_regions" {
+  description = <<DESC
+  Map of the list of approved regions controls.
 
-resource_approved_regions = { 
+  Possible values for the key of this map is found in locals.tf defined in the local variable policy_map.
+  For example azure-aks-managed-cluster : "tmod:@turbot/azure-aks#/policy/types/managedClusterApproved"` has key `azure-aks-managed-cluster`.
+
+  The value of the map is one of these possible values:
+    - "Skip"
+    - "Check: Approved"
+    - "Enforce: Delete unapproved if new"
+
+  Check demo.tfvars for an example of how to set this value.
+
+  NOTE: Default behaviour is to approve all services which means expecting all mods to be installed
+  DESC
+  type        = map(string)
+  default = {
     azure-aks-managed-cluster                       = "Check: Approved"
     azure-apimanagement-service                     = "Check: Approved"
     azure-application-gateway                       = "Check: Approved"
@@ -47,8 +57,75 @@ resource_approved_regions = {
     azure-synapseanalytics-workspace                = "Check: Approved"
 }
 
-# NOTE: For full list of values, look in variables.tf at the default value
-resource_approved_regions_region_list = [
-    "eastus",
-    "eastus2"
-]
+
+variable "resource_approved_regions_region_list" {
+  description = <<DESC
+  The expected format is an array of regions names. You may use the '*' and '?' wildcard characters.
+  Example of values:
+    - eastus
+    - eastus2
+
+  NOTE: Default behaviour is to approve all regions
+  DESC
+  type        = list(string)
+  default = [
+    -eastus
+    -eastus2
+    # - southcentralus
+    # - westus2
+    # - australiaeast
+    # - southeastasia
+    # - northeurope
+    # - uksouth
+    # - westeurope
+    # - centralus
+    # - northcentralus
+    # - westus
+    # - southafricanorth
+    # - centralindia
+    # - eastasia
+    # - japaneast
+    # - koreacentral
+    # - canadacentral
+    # - francecentral
+    # - germanywestcentral
+    # - norwayeast
+    # - switzerlandnorth
+    # - uaenorth
+    # - brazilsouth
+    # - westcentralus
+    # - australiacentral
+    # - australiasoutheast
+    # - japanwest
+    # - koreasouth
+    # - southindia
+    # - westindia
+    # - canadaeast
+    # - ukwest
+  ]
+}
+
+# Optional Common Baseline Configuration
+
+variable "turbot_profile" {
+  description = "Enter profile matching your turbot cli credentials."
+}
+
+variable "smart_folder_name" {
+  description = "Smart folder name for the baseline"
+  type        = string
+  default     = "Azure Check Regions Policies"
+}
+
+variable "smart_folder_description" {
+  description = "Enter a description for the smart folder"
+  type        = string
+  default     = "Defines sets of policies for the Azure check regions baseline"
+}
+
+variable "smart_folder_parent_resource" {
+  description = "Enter the resource ID or AKA for the parent of the smart folder"
+  type        = string
+  default     = "tmod:@turbot/turbot#/"
+}
+
